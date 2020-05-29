@@ -1,0 +1,14 @@
+.Card {
+  max-width: 9.7vh;
+  margin: 0.25rem;
+  padding: 0.33vh;
+  cursor: pointer;
+}
+
+.Card.active {
+  filter: drop-shadow(0 0 4px rgb(255, 255, 255));
+}
+
+.Card.disable {
+  cursor: no-drop;
+}

@@ -1,0 +1,16 @@
+.Hand {
+  display: grid;
+  margin-left: 0.3vh;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr 2fr;
+  align-items: center;
+}
+
+.Hand_winRate {
+  font-weight: 300;
+  font-size: 6.5vh;
+  justify-self: right;
+  text-align: right;
+  color: #f7f7f7;
+  font-variant-numeric: tabular-nums;
+}
