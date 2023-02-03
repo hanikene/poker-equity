@@ -1,4 +1,4 @@
-.Poker {
+.PokerTable {
   min-height: 100vh;
   height: 100%;
   width: 2rem;
@@ -11,7 +11,7 @@
   position: relative;
 }
 
-.Poker h1 {
+.PokerTable h1 {
   font-size: 6.5vh;
   font-weight: 100;
   margin-bottom: 1rem;
