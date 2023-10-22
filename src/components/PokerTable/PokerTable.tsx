@@ -34,8 +34,7 @@ const PokerTable: React.FC = () => {
 
   const stopSimulateHand = () => {
     clearTimeout(simulationId);
-    const resetHands = hands.map((hand) => ({ ...hand, winRate: 0 }));
-    setHands(resetHands);
+    setHands((currHands) => currHands.map((hand) => ({ ...hand, winRate: 0 })));
   };
 
   const simulateHand = () => {
@@ -54,20 +53,25 @@ const PokerTable: React.FC = () => {
             declaredSpotCards
           );
           const results = compareHands(declaredSpotCardsInGame, declaredHands);
+          const updatedHands = [...hands];
           results.forEach((result, playerId) => {
             if (result === "win") {
               wins[playerId]++;
             }
             if (simulationIndex % SIMULATIONS_PER_RENDER === 0) {
               const winRate = wins[playerId] / (simulationIndex + 1);
-              const updatedHands = [...hands];
               updatedHands[playerId].winRate = Math.floor(winRate * 100);
-              setHands(updatedHands);
             }
           });
-
+          let isSimulating = true;
+          setHands((currHands) => {
+            if (currHands.length === updatedHands.length) return updatedHands;
+            isSimulating = false;
+            return currHands;
+          });
           simulationIndex++;
-          if (simulationIndex < NUMBER_OF_SIMULATIONS) processSimulation();
+          if (simulationIndex < NUMBER_OF_SIMULATIONS && isSimulating)
+            processSimulation();
         }, 0);
       };
 
@@ -123,10 +127,10 @@ const PokerTable: React.FC = () => {
   };
 
   const addHand = () => {
-    setHands([
-      ...hands,
+    setHands((currHands) => [
+      ...currHands,
       {
-        id: hands.length,
+        id: currHands.length,
         cards: Array(2).fill(undefined),
         winRate: 0,
       },
@@ -134,20 +138,23 @@ const PokerTable: React.FC = () => {
   };
 
   const removeHand = () => {
-    let updatedHands = [...hands];
+    const cardsRemovedHand = hands[hands.length - 1].cards;
     let updatedCards = cards.map((card) => {
-      updatedHands[updatedHands.length - 1].cards.forEach((handCard) => {
-        if (handCard !== undefined && handCard.name === card.name) {
-          card.taken = false;
-        }
-      });
+      const isFirstCardFromRemovedHand =
+        cardsRemovedHand[0] !== undefined &&
+        cardsRemovedHand[0].name === card.name;
+      const isSecondCardFromRemovedHand =
+        cardsRemovedHand[1] !== undefined &&
+        cardsRemovedHand[1].name === card.name;
+      if (isFirstCardFromRemovedHand || isSecondCardFromRemovedHand) {
+        card.taken = false;
+      }
       return card;
     });
-    updatedHands.pop();
-    setHands(updatedHands);
+    setHands((currHands) => [
+      ...currHands.slice(0, -1).map((hand) => ({ ...hand, winRate: 0 })),
+    ]);
     setCards(updatedCards);
-    stopSimulateHand();
-    simulateHand();
   };
 
   const handsRender = hands.map((hand) => (
